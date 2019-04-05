@@ -1,7 +1,71 @@
+const express = require("express");
+const bodyParser = require("body-parser");
+const state = require("./state");
 
-const express = require('express')
-const app = express()
-const port = process.env.PORT || 4000
+const app = express();
+const port = process.env.PORT || 4000;
+app.use(bodyParser.json());
 
-app.listen(port, () => 
-  console.log(`Example app listening on port ${port}!`))
+let lastId = state.users[state.users.length - 1]._id;
+
+app.get("/users", (req, res) => res.send(state.users));
+
+// app.get("/users/1", (req, res) => res.send(state.users[0]));
+
+app.get("/users/:userId", (req, res) => {
+  const reqUser = state.users.find(user => user._id == req.params.userId);
+  if (reqUser) {
+    res.json(reqUser);
+  } else {
+    res.send("not a valid userId");
+  }
+});
+
+// app.post("/users", (req, res) => {
+//   state.users.push({ msg: "Hello World!" });
+//   res.json(state.users[state.users.length - 1]);
+// });
+
+app.post("/users", (req, res) => {
+  const newUser = req.body;
+  lastId++;
+  newUser._id = lastId;
+  state.users.push(newUser);
+  res.json(state.users[state.users.length - 1]);
+});
+
+// app.put("/users/1", (req, res) => {
+//   state.users[0].name = "Fox Mulder";
+//   res.json(state.users[0]);
+// });
+
+app.put("/users/:userId", (req, res) => {
+  const userIndex = state.users.findIndex(
+    user => user._id == req.params.userId
+  );
+  if (userIndex > -1) {
+    state.users[userIndex].name = "Fox Mulder";
+    res.json(state.users[userIndex]);
+  } else {
+    res.send("not a valid userId");
+  }
+});
+
+// app.delete("/users/1", (req, res) => {
+//   state.users.shift();
+//   res.send("deleted");
+// });
+
+app.delete("/users/:userId", (req, res) => {
+  const userIndex = state.users.findIndex(
+    user => user._id == req.params.userId
+  );
+  if (userIndex > -1) {
+    state.users[userIndex].isActive = false;
+    res.send("deleted");
+  } else {
+    res.send("not a valid userId");
+  }
+});
+
+app.listen(port, () => console.log(`Example app listening on port ${port}!`));
