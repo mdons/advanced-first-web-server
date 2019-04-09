@@ -15,14 +15,14 @@ app.get("/users", (req, res) => res.send(state.users));
 app.get("/users/:userId", (req, res) => {
   const reqUser = state.users.find(user => user._id == req.params.userId);
   if (reqUser) {
-    res.json(reqUser);
+    res.send(reqUser);
   } else {
     res.send("not a valid userId");
   }
 });
 
 // app.post("/users", (req, res) => {
-//   state.users.push({ msg: "Hello World!" });
+//   state.users.push({ name: "Fox Mulder" });
 //   res.json(state.users[state.users.length - 1]);
 // });
 
@@ -31,11 +31,11 @@ app.post("/users", (req, res) => {
   lastId++;
   newUser._id = lastId;
   state.users.push(newUser);
-  res.json(state.users[state.users.length - 1]);
+  res.json(newUser);
 });
 
 // app.put("/users/1", (req, res) => {
-//   state.users[0].name = "Fox Mulder";
+//   state.users[0].occupation = "web developer";
 //   res.json(state.users[0]);
 // });
 
@@ -44,7 +44,7 @@ app.put("/users/:userId", (req, res) => {
     user => user._id == req.params.userId
   );
   if (userIndex > -1) {
-    state.users[userIndex].name = "Fox Mulder";
+    state.users[userIndex].occupation = "web developer";
     res.json(state.users[userIndex]);
   } else {
     res.send("not a valid userId");
